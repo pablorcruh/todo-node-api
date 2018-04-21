@@ -34,12 +34,12 @@ var UserSchema=new mongoose.Schema({
 });
 
 UserSchema.methods.toJSON=function(){
-    var user=this;
+    var user=this; // llamamos al objeto individual
     var userObject=user.toObject();
     return _.pick(userObject,['_id', 'email']);
 };
 
-
+// usamos los metodos de instancia
 UserSchema.methods.generateAuthToken=function(){
     var user=this;
     var access='auth';
@@ -52,6 +52,24 @@ UserSchema.methods.generateAuthToken=function(){
     });
 
 };
+
+// statics metodo usado para convertir en metodos de modelo
+UserSchema.statics.findByToken=function(token){
+    var User=this; // llamamos al objeto modelo
+    var decoded;
+
+    try{
+        decoded=jwt.verify(token, 'abc123')
+    }catch(e){
+        return Promise.reject();
+    }
+    return User.findOne({
+        '_id': decoded._id,
+        'tokens.token':token,
+        'tokens.access':'auth'
+    });
+};
+
 
 var Users=mongoose.model('User',UserSchema);
 
