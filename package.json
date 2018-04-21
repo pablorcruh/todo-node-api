@@ -4,18 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start":"node server/server.js",
+    "start": "node server/server.js",
     "test": "mocha server/**/*.test.js",
-    "test-watch":"nodemon --exec 'npm test'"
+    "test-watch": "nodemon --exec 'npm test'"
   },
-  "engines":{
-    "node":"8.11.1"
+  "engines": {
+    "node": "8.11.1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
+    "lodash": "^4.17.5",
     "mongodb": "^3.0.7",
     "mongoose": "^5.0.15"
   },
@@ -23,6 +24,6 @@
     "expect": "^1.20.2",
     "mocha": "^3.0.2",
     "nodemon": "^1.17.3",
-    "supertest": "^3.0.0"
+    "supertest": "^2.0.0"
   }
 }
