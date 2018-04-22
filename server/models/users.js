@@ -3,6 +3,8 @@ const mongoose=require('mongoose');
 const validator=require('validator');
 const jwt=require('jsonwebtoken');
 const _=require('lodash');
+const bcrypt=require('bcryptjs');
+
 var UserSchema=new mongoose.Schema({
     email: {
         type: String,
@@ -70,6 +72,27 @@ UserSchema.statics.findByToken=function(token){
     });
 };
 
+UserSchema.pre('save',function(next){
+    var user=this;
+    if(user.isModified('password')){
+        bcrypt.genSalt(10,(err,salt)=>{
+            if(err){
+                console.log('An error has ocurred salting password');
+                next();
+            }
+            bcrypt.hash(user.password,salt,(err,hash)=>{
+                if(err){
+                    console.log('An error has ocurred hashing password');
+                    next();
+                }
+                user.password=hash;
+                next();
+            });
+        })
+    }else{
+        next();
+    }
+});
 
 var Users=mongoose.model('User',UserSchema);
 
