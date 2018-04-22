@@ -113,6 +113,18 @@ UserSchema.pre('save',function(next){
     }
 });
 
+UserSchema.methods.removeToken=function(token){
+    var user=this;
+    return user.update({
+        $pull:{
+            tokens:{
+                token:token
+            }
+        }
+    })
+};
+
+
 var Users=mongoose.model('User',UserSchema);
 
 module.exports={Users}
