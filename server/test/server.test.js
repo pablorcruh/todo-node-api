@@ -209,7 +209,7 @@ describe('DELETE /todos/:id', () => {
                     expect(user).toExist();
                     expect(user.password).toNotBe(password);
                     done();
-                })
+                }).catch((e)=>done(e));
             });
       });
 
@@ -241,5 +241,56 @@ describe('DELETE /todos/:id', () => {
                     done();
                 });
               })
+      });
+  });
+
+  // res.headers['x-auth'] -> se usa los corchetes debido a que el nombre de la propiedad dentro del encabezado tiene un guion 
+
+  describe('POST /users/login',()=>{
+      it('should login user and return auth token',(done)=>{
+        request(app)
+            .post('/users/login')
+            .send({
+                email:users[1].email,
+                password:users[1].password
+            })
+            .expect(200)
+            .expect((res)=>{
+                expect(res.headers['x-auth']).toExist();
+            })
+            .end((err,res)=>{
+              if(err){
+                  return done(err);
+              }  
+              Users.findById(users[1]._id).then((user)=>{
+                expect(user.tokens[0]).toInclude({
+                    access:'auth',
+                    token: res.headers['x-auth']
+                });
+                done();
+              }).catch(()=>done(e));
+            });
+      });
+
+      it('should reject invalid login',(done)=>{
+        request(app)
+            .post('/users/login')
+            .send({
+                email:users[1].email,
+                password: '123'
+            })
+            .expect(400)
+            .expect((res)=>{
+                expect(res.headers['x-autn']).toNotExist();
+            })
+            .end((err, res)=>{
+                if(err){
+                    return done(err);
+                }
+                Users.findOne(users[1]._id).then((user)=>{
+                    expect(user.tokens.length).toBe(0);
+                    done();
+                }).catch((e)=>done(e));
+            });
       });
   });
